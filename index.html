@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<style>
+
+  body{
+    font-family: Arial, sans-serif;
+    background:#1e1e3f;
+    color:white;
+    text-align:center;
+    padding:20px;
+    margin:0;
+  }
+  h1{margin-bottom:10px;}
+button {
+    width: 50px;        /* 버튼 가로 */
+    height: 50px;       /* 버튼 세로 = 가로, 정사각형 */
+    font-size: 10px;     /* 글자 크기 */
+    margin: 30px;
+    border: none;
+    border-radius: 50%;  /* 완전 원형 */
+    cursor: pointer;
+    background: gold;
+    display: inline-flex;      /* 글자 중앙 정렬 */
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3); /* 입체감 옵션 */
+    transition: transform 0.2s ease;
+}
+
+button:hover {
+    transform: scale(1.1);
+}
+
+  #deck{
+    display: grid;
+    grid-template-columns: repeat(13, 75px);
+    grid-gap: 10px 12px;
+    justify-content: center;
+    max-width: 1100px;
+    margin: 20px auto;
+  }
+
+  .card{
+    width: 70px;
+    height: 105px;
+    border-radius: 8px;
+    cursor: pointer;
+    object-fit: cover;
+    border: 2px solid transparent;
+    box-sizing: border-box;
+    transition: transform 0.15s ease;
+  }
+  .card:hover:not(.selected){
+    transform: scale(1.1);
+    z-index: 10;
+  }
+  .selected{
+    border-radius:50px;
+    border-color: gold;
+    cursor: default;
+  }
+
+  #resultArea{
+    position: relative;
+    width: 560px;
+    height: 380px;
+    margin: 100px auto;
+    display: none;
+    background: #2a2a4a;
+    border-radius: 15px;
+  }
+  .result-card{
+    position: absolute;
+    width: 100px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  #pos1 { top: 120px; left: 190px; }    /* 현재 상황 */
+  #pos2 { top: 100px; left: 270px; }    /* 장애물 */
+  #pos6 { top: 120px; left: 390px; }    /* 가까운 미래 */
+  #pos4 { top: 120px; left: 70px; }     /* 과거 */
+  #pos3 { top: 280px; left: 230px; }    /* 무의식 */
+  #pos5 { top: -60px; left: 230px; }    /* 외면 */
+
+  /* 모바일 반응형 */
+  @media (max-width: 720px) {
+    #deck {
+      grid-template-columns: repeat(7, 45px);
+      grid-gap: 8px 10px;
+      max-width: 350px;
+    }
+    .card {
+      width: 42px;
+      height: 63px;
+    }
+    #resultArea {
+      width: 320px;
+      height: 420px;
+      margin: 20px auto;
+    }
+    .result-card {
+      width: 70px;
+      height: 105px;
+    }
+    /* 모바일에선 켈틱 크로스 카드 세로 배치 */
+    #pos1 { top: 10px; left: 140px; }
+    #pos2 { top: 130px; left: 140px; }
+    #pos6 { top: 250px; left: 140px; }
+    #pos4 { top: 130px; left: 40px; }
+    #pos3 { top: 250px; left: 40px; }
+    #pos5 { top: 10px; left: 40px; }
+  }
+</style>
+
+</head>
+<body>
+
+<button onclick="shuffleDeck()"></button>
+
+<div id="deck"></div>
+
+<div id="resultArea">
+  <img id="pos1" class="result-card" alt="현재 상황">
+  <img id="pos2" class="result-card" alt="장애물">
+  <img id="pos3" class="result-card" alt="무의식">
+  <img id="pos4" class="result-card" alt="과거">
+  <img id="pos5" class="result-card" alt="외면">
+  <img id="pos6" class="result-card" alt="가까운 미래">
+</div>
+
+<script>
+  const deckDiv = document.getElementById("deck");
+  const resultArea = document.getElementById("resultArea");
+
+  const backImage = "https://i.namu.wiki/i/Bk8bSK1DdAvvH3vPzUGOQvtysbsovnMhjna7OfK6yGJ-OqX7VO54t7HkLcR5R88VFCCU8TCox_LYRDsBzVWrLA.webp";
+  const baseURL = "https://beming-dev.github.io/tarot-app/cards/img(";
+  const ext = ").jpg";
+
+  let deckOrder = [];
+  let selectedCards = [];
+  const maxSelect = 6;
+
+  function initDeck(){
+    deckOrder = [];
+    for(let i=1;i<=78;i++){
+      deckOrder.push(i);
+    }
+    renderDeck();
+  }
+
+  function renderDeck(){
+    deckDiv.innerHTML = "";
+    selectedCards = [];
+    resultArea.style.display = "none";
+
+    deckOrder.forEach(num=>{
+      const img = document.createElement("img");
+      img.className = "card";
+      img.src = backImage;
+      img.dataset.num = num;
+      img.addEventListener("click", () => selectCard(img));
+      deckDiv.appendChild(img);
+    });
+  }
+
+  function selectCard(img){
+    if(selectedCards.length >= maxSelect) return;
+    const num = img.dataset.num;
+    if(selectedCards.includes(num)) return;
+
+    selectedCards.push(num);
+    img.classList.add("selected");
+
+    if(selectedCards.length === maxSelect){
+      showResult();
+    }
+  }
+
+  function showResult(){
+    const posIds = ["pos1","pos2","pos3","pos4","pos5","pos6"];
+    for(let i=0; i < maxSelect; i++){
+      const cardImg = document.getElementById(posIds[i]);
+      cardImg.src = baseURL + selectedCards[i] + ext;
+    }
+    resultArea.style.display = "block";
+    resultArea.scrollIntoView({behavior:"smooth"});
+  }
+
+  function shuffleDeck(){
+    for(let i=deckOrder.length -1; i>0; i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [deckOrder[i], deckOrder[j]] = [deckOrder[j], deckOrder[i]];
+    }
+    renderDeck();
+  }
+
+  initDeck();
+</script>
+
+</body>
+</html>

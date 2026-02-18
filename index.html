@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,9 @@
     padding:20px;
     margin:0;
   }
+
   h1{margin-bottom:10px;}
+
   button {
       width: 50px;        /* 버튼 가로 */
       height: 50px;       /* 버튼 세로 = 가로, 정사각형 */
@@ -30,9 +32,9 @@
       transition: transform 0.2s ease;
   }
 
-button:hover {
-    transform: scale(1.1);
-}
+  button:hover {
+      transform: scale(1.1);
+  }
 
   #deck{
     display: grid;
@@ -69,12 +71,13 @@ button:hover {
     height: 380px;
     margin: 100px auto;
     display: none;
+    background: #2a2a4a;
     border-radius: 15px;
   }
   .result-card{
     position: absolute;
     width: 100px;
-    height: 150px;
+    height: 170px;
     object-fit: cover;
     border-radius: 8px;
   }
@@ -107,7 +110,7 @@ button:hover {
   }
 
   #resultArea {
-    width: 95vw;          /* 화면 기준 */
+    width: 90vw;          /* 화면 기준 */
     height: calc(95vw * 0.68);  /* 560:380 비율 유지 */
     margin: 40px auto;
     position: relative;
@@ -131,7 +134,7 @@ button:hover {
 </head>
 <body>
 
-<button onclick="shuffleDeck()"></button>
+<button id="shuffleBtn" onclick="shuffleDeck()"></button>
 
 <div id="deck"></div>
 
@@ -147,6 +150,7 @@ button:hover {
 <script>
   const deckDiv = document.getElementById("deck");
   const resultArea = document.getElementById("resultArea");
+  const shuffleBtn = document.getElementById("shuffleBtn"); // 👈 버튼 요소 가져오기
 
   const backImage = "https://i.namu.wiki/i/Bk8bSK1DdAvvH3vPzUGOQvtysbsovnMhjna7OfK6yGJ-OqX7VO54t7HkLcR5R88VFCCU8TCox_LYRDsBzVWrLA.webp";
   const baseURL = "https://beming-dev.github.io/tarot-app/cards/img(";
@@ -164,10 +168,13 @@ button:hover {
     renderDeck();
   }
 
-  function renderDeck(){
+ function renderDeck(){
     deckDiv.innerHTML = "";
     selectedCards = [];
     resultArea.style.display = "none";
+    
+    // 셔플 후 카드를 뿌릴 때 덱 영역은 보이게 유지
+    deckDiv.style.display = "grid"; 
 
     deckOrder.forEach(num=>{
       const img = document.createElement("img");
@@ -186,8 +193,7 @@ button:hover {
 
     selectedCards.push(num);
     img.classList.add("selected");
-
-    img.style.visibility = "hidden";   // 👈 추가 (카드 안 보이게)
+    img.style.visibility = "hidden"; 
 
     if(selectedCards.length === maxSelect){
       showResult();
@@ -200,7 +206,11 @@ button:hover {
       const cardImg = document.getElementById(posIds[i]);
       cardImg.src = baseURL + selectedCards[i] + ext;
     }
-    resultArea.style.display = "block";
+    
+    deckDiv.style.display = "none";    // 덱 숨기기
+    resultArea.style.display = "block"; // 결과 보이기
+    shuffleBtn.style.display = "inline-flex"; // 👈 결과가 나오면 버튼 다시 보이기
+    
     resultArea.scrollIntoView({behavior:"smooth"});
   }
 
@@ -215,9 +225,10 @@ button:hover {
     resultArea.style.display = "none";  // 결과 영역 숨김
   }
 
-
   function shuffleDeck(){
-   resetResult(); 
+    shuffleBtn.style.display = "none"; 
+    
+    resetResult(); 
     for(let i=deckOrder.length -1; i>0; i--){
       const j = Math.floor(Math.random()*(i+1));
       [deckOrder[i], deckOrder[j]] = [deckOrder[j], deckOrder[i]];
@@ -226,8 +237,8 @@ button:hover {
   }
 
   initDeck();
+
 </script>
 
 </body>
 </html>
-

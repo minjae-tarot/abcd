@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 
   body{
@@ -13,21 +14,21 @@
     margin:0;
   }
   h1{margin-bottom:10px;}
-button {
-    width: 50px;        /* 버튼 가로 */
-    height: 50px;       /* 버튼 세로 = 가로, 정사각형 */
-    font-size: 10px;     /* 글자 크기 */
-    margin: 30px;
-    border: none;
-    border-radius: 50%;  /* 완전 원형 */
-    cursor: pointer;
-    background: gold;
-    display: inline-flex;      /* 글자 중앙 정렬 */
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3); /* 입체감 옵션 */
-    transition: transform 0.2s ease;
-}
+  button {
+      width: 50px;        /* 버튼 가로 */
+      height: 50px;       /* 버튼 세로 = 가로, 정사각형 */
+      font-size: 10px;     /* 글자 크기 */
+      margin: 30px;
+      border: none;
+      border-radius: 50%;  /* 완전 원형 */
+      cursor: pointer;
+      background: gold;
+      display: inline-flex;      /* 글자 중앙 정렬 */
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3); /* 입체감 옵션 */
+      transition: transform 0.2s ease;
+  }
 
 button:hover {
     transform: scale(1.1);
@@ -86,34 +87,46 @@ button:hover {
   #pos3 { top: 280px; left: 230px; }    /* 무의식 */
   #pos5 { top: -60px; left: 230px; }    /* 외면 */
 
-  /* 모바일 반응형 */
   @media (max-width: 720px) {
+
     #deck {
-      grid-template-columns: repeat(7, 45px);
-      grid-gap: 8px 10px;
-      max-width: 350px;
+      grid-template-columns: repeat(6, 1fr);  /* 👈 가로 6장 */
+      grid-auto-rows: auto;
+      grid-gap: 8px;
+      max-width: 100%;
+      padding: 0 10px;
     }
+
     .card {
-      width: 42px;
-      height: 63px;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 2 / 3;   /* 카드 비율 유지 */
     }
-    #resultArea {
-      width: 320px;
-      height: 420px;
-      margin: 20px auto;
-    }
-    .result-card {
-      width: 70px;
-      height: 105px;
-    }
-    /* 모바일에선 켈틱 크로스 카드 세로 배치 */
-    #pos1 { top: 10px; left: 140px; }
-    #pos2 { top: 130px; left: 140px; }
-    #pos6 { top: 250px; left: 140px; }
-    #pos4 { top: 130px; left: 40px; }
-    #pos3 { top: 250px; left: 40px; }
-    #pos5 { top: 10px; left: 40px; }
+
+     body {
+    overflow-x: hidden;   /* 가로 스크롤 제거 */
   }
+
+  #resultArea {
+    width: 95vw;          /* 화면 기준 */
+    height: calc(95vw * 0.68);  /* 560:380 비율 유지 */
+    margin: 40px auto;
+    position: relative;
+  }
+
+  .result-card {
+    width: 18vw;
+    height: auto;
+  }
+   #pos1 { top: 32%; left: 34%; }
+  #pos2 { top: 26%; left: 48%; }
+  #pos6 { top: 32%; left: 70%; }
+  #pos4 { top: 32%; left: 8%; }
+  #pos3 { top: 70%; left: 40%; }
+  #pos5 { top: -10%; left: 40%; }
+
+  }
+
 </style>
 
 </head>
@@ -175,6 +188,8 @@ button:hover {
     selectedCards.push(num);
     img.classList.add("selected");
 
+    img.style.visibility = "hidden";   // 👈 추가 (카드 안 보이게)
+
     if(selectedCards.length === maxSelect){
       showResult();
     }
@@ -190,7 +205,20 @@ button:hover {
     resultArea.scrollIntoView({behavior:"smooth"});
   }
 
+  function resetResult(){
+    const posIds = ["pos1","pos2","pos3","pos4","pos5","pos6"];
+
+    posIds.forEach(id => {
+      const cardImg = document.getElementById(id);
+      cardImg.src = "";   // 결과 카드 이미지 제거
+    });
+
+    resultArea.style.display = "none";  // 결과 영역 숨김
+  }
+
+
   function shuffleDeck(){
+   resetResult(); 
     for(let i=deckOrder.length -1; i>0; i--){
       const j = Math.floor(Math.random()*(i+1));
       [deckOrder[i], deckOrder[j]] = [deckOrder[j], deckOrder[i]];

@@ -119,6 +119,7 @@
     for(let i=1; i<=78; i++){
       deckOrder.push(i);
     }
+	resultArea.style.display = "none";
   }
 
   function renderDeck(){
@@ -173,8 +174,11 @@
   }
 
   function shuffleDeck(){
-    shuffleBtn.style.display = "none"; 
-    resetResult(); 
+    if (resultArea.style.display != "none") {
+		resetResult();
+		return;
+	}
+	shuffleBtn.style.display = "none";
     for(let i=deckOrder.length -1; i>0; i--){
       const j = Math.floor(Math.random()*(i+1));
       [deckOrder[i], deckOrder[j]] = [deckOrder[j], deckOrder[i]];

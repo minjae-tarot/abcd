@@ -1,193 +1,208 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: black;
-    color: white;
-    text-align: center;
-    padding: 20px;
-    margin: 0;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: black;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+    }
 
-  h1 { margin-bottom: 10px; }
+    h1 {
+      margin-bottom: 10px;
+    }
 
-  button {
-    width: 60px;
-    height: 60px;
-    font-size: 12px;
-    margin: 20px;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    background: gray;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s ease;
-  }
+    button {
+      width: 60px;
+      height: 60px;
+      font-size: 12px;
+      margin: 20px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      background: gray;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
 
-  button:hover { transform: scale(1.1); }
+    button:hover {
+      transform: scale(1.1);
+    }
 
-  #deck {
-    display: grid;
-    grid-template-columns: repeat(13, 1fr);
-    grid-gap: 10px;
-    justify-content: center;
-    max-width: 1000px;
-    margin: 20px auto;
-  }
+    #deck {
+      display: grid;
+      grid-template-columns: repeat(13, 1fr);
+      grid-gap: 10px;
+      justify-content: center;
+      max-width: 1000px;
+      margin: 20px auto;
+    }
 
-  .card {
-    width: 100%;
-    aspect-ratio: 2 / 3;
-    cursor: pointer;
-    object-fit: cover;
-    transition: transform 0.15s ease;
-  }
+    .card {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      cursor: pointer;
+      object-fit: cover;
+      transition: transform 0.15s ease;
+    }
 
-  .card:hover { transform: scale(1.1); z-index: 10; }
+    .card:hover {
+      transform: scale(1.1);
+      z-index: 10;
+    }
 
-  #resultArea {
-    display: none;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
-    margin-top: 50px;
-    padding: 20px;
-  }
+    /* 결과창 레이아웃: 3열(3개씩)로 설정하여 12장이면 자동으로 4라인 형성 */
+    #resultArea {
+      display: none;
+      grid-template-columns: repeat(3, 150px);
+      justify-content: center;
+      gap: 30px;
+      margin-top: 50px;
+      padding: 20px;
+    }
 
-  .result-card-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+    .result-card-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-  .result-card {
-    width: 150px;
-    height: auto;
-  }
+    .result-card {
+      width: 100%;
+      height: auto;
+    }
 
-  .card-label {
-    margin-top: 15px;
-    font-weight: bold;
-  }
+    .card-label {
+      margin-top: 15px;
+      font-weight: bold;
+    }
 
-  @media (max-width: 720px) {
-    #deck { grid-template-columns: repeat(6, 1fr); }
-    .result-card { width: 25vw; }
-    #resultArea { gap: 10px; }
-  }
-</style>
+    @media (max-width: 720px) {
+      #deck {
+        grid-template-columns: repeat(6, 1fr);
+      }
+
+      .result-card {
+        width: 25vw;
+      }
+
+      #resultArea {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<button id="shuffleBtn" onclick="shuffleDeck()"></button>
+  <button id="shuffleBtn" onclick="shuffleDeck()"></button>
 
-<div id="deck"></div>
+  <div id="deck"></div>
 
-<div id="resultArea">
-  <div class="result-card-container">
-    <img id="pos1" class="result-card">
-  </div>
-  <div class="result-card-container">
-    <img id="pos2" class="result-card">
-  </div>
-  <div class="result-card-container">
-    <img id="pos3" class="result-card">
-  </div>
-</div>
+  <div id="resultArea"></div>
 
-<script>
-  const deckDiv = document.getElementById("deck");
-  const resultArea = document.getElementById("resultArea");
-  const shuffleBtn = document.getElementById("shuffleBtn");
+  <script>
+    const deckDiv = document.getElementById("deck");
+    const resultArea = document.getElementById("resultArea");
+    const shuffleBtn = document.getElementById("shuffleBtn");
 
-  const backImage = "https://minjae-tarot.github.io/abcd/cards/joker.png";
-  const baseURL = "https://minjae-tarot.github.io/abcd/cards/img(";
-  const ext = ").jpg";
-  
-  let deckOrder = [];
-  let selectedCards = [];
-  const maxSelect = 3;
+    const backImage = "https://minjae-tarot.github.io/abcd/cards/joker.png";
+    const baseURL = "https://minjae-tarot.github.io/abcd/cards/img(";
+    const ext = ").jpg";
 
-  function initDeck(){
-    deckOrder = [];
-    for(let i=1; i<=78; i++){
-      deckOrder.push(i);
+    let deckOrder = [];
+    let selectedCards = [];
+    const maxSelect = 12; // 12장으로 변경
+
+    function initDeck() {
+      deckOrder = [];
+      for (let i = 1; i <= 78; i++) {
+        deckOrder.push(i);
+      }
+      resultArea.style.display = "none";
     }
-	resultArea.style.display = "none";
-  }
 
-  function renderDeck(){
-    deckDiv.innerHTML = "";
-    selectedCards = [];
-    resultArea.style.display = "none";
-    deckDiv.style.display = "grid"; 
+    function renderDeck() {
+      deckDiv.innerHTML = "";
+      selectedCards = [];
+      resultArea.style.display = "none";
+      deckDiv.style.display = "grid";
 
-    deckOrder.forEach(num => {
-      const img = document.createElement("img");
-      img.className = "card";
-      img.src = backImage;
-      img.dataset.num = num;
-      img.addEventListener("click", () => selectCard(img));
-      deckDiv.appendChild(img);
-    });
-  }
-
-  function selectCard(img){
-    if(selectedCards.length >= maxSelect) return;
-    const num = img.dataset.num;
-    if(selectedCards.includes(num)) return;
-
-    selectedCards.push(num);
-    img.style.visibility = "hidden";
-
-    if(selectedCards.length === maxSelect){
-      showResult();
+      deckOrder.forEach(num => {
+        const img = document.createElement("img");
+        img.className = "card";
+        img.src = backImage;
+        img.dataset.num = num;
+        img.addEventListener("click", () => selectCard(img));
+        deckDiv.appendChild(img);
+      });
     }
-  }
 
-  function showResult(){
-    const posIds = ["pos1", "pos2", "pos3"];
-    for(let i=0; i < maxSelect; i++){
-      const cardImg = document.getElementById(posIds[i]);
-      cardImg.src = baseURL + selectedCards[i] + ext;
+    function selectCard(img) {
+      if (selectedCards.length >= maxSelect) return;
+      const num = img.dataset.num;
+      if (selectedCards.includes(num)) return;
+
+      selectedCards.push(num);
+      img.style.visibility = "hidden";
+
+      if (selectedCards.length === maxSelect) {
+        showResult();
+      }
     }
-    
-    deckDiv.style.display = "none"; 
-    resultArea.style.display = "flex";
-    shuffleBtn.style.display = "inline-flex"; 
-    
-    resultArea.scrollIntoView({behavior:"smooth"});
-  }
 
-  function resetResult(){
-    const posIds = ["pos1", "pos2", "pos3"];
-    posIds.forEach(id => {
-      document.getElementById(id).src = "";
-    });
-    resultArea.style.display = "none";
-  }
+    function showResult() {
+      // 표시 부분 변경: 12장을 동적으로 생성
+      resultArea.innerHTML = "";
+      for (let i = 0; i < maxSelect; i++) {
+        const container = document.createElement("div");
+        container.className = "result-card-container";
+        const img = document.createElement("img");
+        img.className = "result-card";
+        img.src = baseURL + selectedCards[i] + ext;
+        container.appendChild(img);
+        resultArea.appendChild(container);
+      }
 
-  function shuffleDeck(){
-    if (resultArea.style.display != "none") {
-		resetResult();
-		return;
-	}
-	shuffleBtn.style.display = "none";
-    for(let i=deckOrder.length -1; i>0; i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [deckOrder[i], deckOrder[j]] = [deckOrder[j], deckOrder[i]];
+      deckDiv.style.display = "none";
+      resultArea.style.display = "grid"; // 4라인 구성을 위해 grid 사용
+      shuffleBtn.style.display = "inline-flex";
+
+      resultArea.scrollIntoView({ behavior: "smooth" });
     }
-    renderDeck();
-  }
 
-  initDeck();
-</script>
+    function resetResult() {
+      // 기존 기능 유지
+      resultArea.innerHTML = "";
+      resultArea.style.display = "none";
+    }
+
+    // 원본 기능 그대로 유지
+    function shuffleDeck() {
+      if (resultArea.style.display != "none") {
+        resetResult();
+        return;
+      }
+      shuffleBtn.style.display = "none";
+      for (let i = deckOrder.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deckOrder[i], deckOrder[j]] = [deckOrder[j], deckOrder[i]];
+      }
+      renderDeck();
+    }
+
+    initDeck();
+  </script>
 
 </body>
+
 </html>

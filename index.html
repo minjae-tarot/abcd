@@ -82,12 +82,9 @@
     border-radius: 8px;
   }
 
-  #pos1 { top: 120px; left: 190px; }    /* 현재 상황 */
-  #pos2 { top: 100px; left: 270px; }    /* 장애물 */
-  #pos6 { top: 120px; left: 390px; }    /* 가까운 미래 */
-  #pos4 { top: 120px; left: 70px; }     /* 과거 */
-  #pos3 { top: 300px; left: 230px; }    /* 무의식 */
-  #pos5 { top: -80px; left: 230px; }    /* 외면 */
+   #pos1 { top: 27%; left: 8%; }
+   #pos2 { top: 27%; left: 40%; }
+   #pos3 { top: 27%; left: 73%; }
 
   @media (max-width: 720px) {
 
@@ -120,13 +117,9 @@
     width: 18vw;
     height: auto;
   }
-   #pos1 { top: 32%; left: 34%; }
-  #pos2 { top: 26%; left: 48%; }
-  #pos6 { top: 32%; left: 73%; }
-  #pos4 { top: 32%; left: 8%; }
-  #pos3 { top: 85%; left: 40%; }
-  #pos5 { top: -25%; left: 40%; }
-
+   #pos1 { top: 27%; left: 8%; }
+   #pos2 { top: 27%; left: 40%; }
+   #pos3 { top: 27%; left: 73%; }
   }
 
 </style>
@@ -139,12 +132,9 @@
 <div id="deck"></div>
 
 <div id="resultArea">
-  <img id="pos1" class="result-card" alt="현재 상황">
-  <img id="pos2" class="result-card" alt="장애물">
-  <img id="pos3" class="result-card" alt="무의식">
-  <img id="pos4" class="result-card" alt="과거">
-  <img id="pos5" class="result-card" alt="외면">
-  <img id="pos6" class="result-card" alt="가까운 미래">
+  <img id="pos1" class="result-card">
+  <img id="pos2" class="result-card">
+  <img id="pos3" class="result-card">
 </div>
 
 <script>
@@ -158,7 +148,7 @@
   
   let deckOrder = [];
   let selectedCards = [];
-  const maxSelect = 6;
+  const maxSelect = 3;
 
   function initDeck(){
     deckOrder = [];
@@ -201,7 +191,7 @@
   }
 
   function showResult(){
-    const posIds = ["pos1","pos2","pos3","pos4","pos5","pos6"];
+    const posIds = ["pos1","pos2","pos3"];
     for(let i=0; i < maxSelect; i++){
       const cardImg = document.getElementById(posIds[i]);
       cardImg.src = baseURL + selectedCards[i] + ext;
@@ -215,7 +205,7 @@
   }
 
   function resetResult(){
-    const posIds = ["pos1","pos2","pos3","pos4","pos5","pos6"];
+    const posIds = ["pos1","pos2","pos3"];
 
     posIds.forEach(id => {
       const cardImg = document.getElementById(id);

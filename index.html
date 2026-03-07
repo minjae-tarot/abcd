@@ -68,7 +68,7 @@
   #resultArea{
     position: relative;
     width: 560px;
-    height: 380px;
+    height: 460px;
     margin: 100px auto;
     display: none;
     background: #2a2a4a;
@@ -82,9 +82,12 @@
     border-radius: 8px;
   }
 
-   #pos1 { top: 27%; left: 8%; }
-   #pos2 { top: 27%; left: 40%; }
-   #pos3 { top: 27%; left: 73%; }
+   #pos1 { top: 5%; left: 8%; }
+   #pos2 { top: 5%; left: 40%; }
+   #pos3 { top: 5%; left: 73%; }
+   #pos4 { top: 60%; left: 8%; }
+   #pos5 { top: 60%; left: 40%; }
+   #pos6 { top: 60%; left: 73%; }
 
   @media (max-width: 720px) {
 
@@ -108,7 +111,7 @@
 
   #resultArea {
     width: 90vw;          /* 화면 기준 */
-    height: calc(95vw * 0.68);  /* 560:380 비율 유지 */
+    height: calc(95vw * 0.90);  /* 560:380 비율 유지 */
     margin: 50px auto;
     position: relative;
   }
@@ -117,9 +120,12 @@
     width: 18vw;
     height: auto;
   }
-   #pos1 { top: 27%; left: 8%; }
-   #pos2 { top: 27%; left: 40%; }
-   #pos3 { top: 27%; left: 73%; }
+   #pos1 { top: 5%; left: 8%; }
+   #pos2 { top: 5%; left: 40%; }
+   #pos3 { top: 5%; left: 73%; }
+   #pos4 { top: 60%; left: 8%; }
+   #pos5 { top: 60%; left: 40%; }
+   #pos6 { top: 60%; left: 73%; }
   }
 
 </style>
@@ -135,6 +141,9 @@
   <img id="pos1" class="result-card">
   <img id="pos2" class="result-card">
   <img id="pos3" class="result-card">
+  <img id="pos4" class="result-card">
+  <img id="pos5" class="result-card">
+  <img id="pos6" class="result-card">
 </div>
 
 <script>
@@ -148,14 +157,14 @@
   
   let deckOrder = [];
   let selectedCards = [];
-  const maxSelect = 3;
+  const maxSelect = 6;
 
   function initDeck(){
     deckOrder = [];
     for(let i=1;i<=78;i++){
       deckOrder.push(i);
     }
-    //renderDeck();
+    resultArea.style.display = "none";
   }
 
  function renderDeck(){
@@ -191,7 +200,7 @@
   }
 
   function showResult(){
-    const posIds = ["pos1","pos2","pos3"];
+    const posIds = ["pos1","pos2","pos3","pos4","pos5","pos6"];
     for(let i=0; i < maxSelect; i++){
       const cardImg = document.getElementById(posIds[i]);
       cardImg.src = baseURL + selectedCards[i] + ext;
@@ -205,7 +214,7 @@
   }
 
   function resetResult(){
-    const posIds = ["pos1","pos2","pos3"];
+    const posIds = ["pos1","pos2","pos3","pos4","pos5","pos6"];
 
     posIds.forEach(id => {
       const cardImg = document.getElementById(id);
@@ -216,16 +225,20 @@
   }
 
   function shuffleDeck(){
-    shuffleBtn.style.display = "none"; 
-    
-    resetResult(); 
-    for(let i=deckOrder.length -1; i>0; i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [deckOrder[i], deckOrder[j]] = [deckOrder[j], deckOrder[i]];
-    }
-    renderDeck();
+	if (resultArea.style.display == "none") {
+		shuffleBtn.style.display = "none";
+		
+		resetResult(); 
+		for(let i=deckOrder.length -1; i>0; i--){
+		  const j = Math.floor(Math.random()*(i+1));
+		  [deckOrder[i], deckOrder[j]] = [deckOrder[j], deckOrder[i]];
+		}
+		renderDeck();
+	} else {
+		resultArea.style.display = "none";
+	}
   }
-
+  
   initDeck();
 
 </script>
